@@ -1,0 +1,38 @@
+img{
+    width: 400px;
+    height: 400px;
+  }
+  img{
+    margin-left: 20px;
+   
+  }
+  imgDiv{
+   padding-left: 110px;
+  }
+  #leftImg, #centerImg, #rightImg{
+      border: #2E8B57;
+      border-style: solid;
+      border-width: thick;
+  }
+  body{
+    background-color: #FFE4E1;
+  }
+  
+  p{
+    font-size: 160%;
+    font-weight: bolder;
+    margin: 50px 50px 50px 0px;
+    text-align: center;
+    color: #2E8B57;
+  }
+  
+  ul{
+    margin-top: 50px;
+  }
+  
+  li{
+    margin-top: 10px;
+    list-style-type: none;
+    color: #2E8B57;
+    font-weight: bold;
+  }
