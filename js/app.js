@@ -45,6 +45,9 @@ function BusMall(name, urlSourse) { //constractor function
 
     //to push the name to the array namesArrayForChartLabel (the name of the array namesArrayForChartLabel=[])
     namesArrayForChartLabel.push(this.name);
+
+    //call the function updateStorage
+    
 }
 
 // let allBusMal=[];
@@ -204,8 +207,7 @@ function handelUserClick(event) {
             shownArray.push(BusMall.allBusMal[i].shown);
 
         }
-        //afterfinish the votes and shown, show the chart
-        busMallChart();
+        
         //create the showResult function, this fun for shown the result
         function showResult() {
 
@@ -221,9 +223,15 @@ function handelUserClick(event) {
                                         has  ${BusMall.allBusMal[i].votes} votes
                                         and was seen ${BusMall.allBusMal[i].shown} times`;
             }
+
+            
             //now we need to make the click button stop after shown the result, to stop repeate the result
             resultButton.removeEventListener('click', showResult);
         }
+        updateStorage();
+        //afterfinish the votes and shown, show the chart
+        
+        busMallChart();
 
         //now we need to make the click stop after 25 votes'the user cann't click after 25 votes', removed event listener // and finaly remove the clicking
         // leftImg.removeEventListener('click', handelUserClick);
@@ -273,3 +281,49 @@ function busMallChart() {
     });
 
 }
+
+// console.log(localStorage);
+// //setItem adding items to the local storage 
+// //setItem: is a way to adding stuff inside block in storage //we need 2 thigs to store something which is key and value //setItem(key,value)
+// localStorage.setItem('name','john');
+// localStorage.setItem('age','24');
+
+// //the data type when i'll storage it should be string
+// //to get the data from my local storage and use it in js
+// //getItem('key), we want the key ad the key it will give us a value
+// //get data from the local storage is by using localStorage.getItem('key');
+// console.log(localStorage.getItem('age'));
+
+// //to removing stuff from the local storage
+// //remove a key from the local storage
+// localStorage.removeItem('age');
+
+// //to removing everything from the local storage
+// localStorage.setItem('walk','walking here...');
+// //now to clear everything from the local storage
+// localStorage.clear();
+
+//now we need to store values in localStorage
+// function updateStorage() {
+//     //we need to store the array
+//     // localStorage.setItem('shown',BusMall.shown);
+//     //way to change the array of object into an actual string to save it into localStorage, we can use json to do that
+//     //JSON: stands for JavaScript Object Notation
+//     //JSON is a normal object contain of 
+//     // let arrayStringUsingJson = JSON
+//     console.log(JSON);
+
+// }
+
+function updateStorage() {
+    let arrayString = JSON.stringify( BusMall.allBusMal);
+    localStorage.setItem('shown data',arrayString);
+}
+function getData(){
+   let data = localStorage.getItem('shown data'); //talk the data from local storage 
+   let dataObj = JSON.parse(data); //change data from string to obj
+   if(dataObj !== null){ 
+    BusMall.allBusMal= dataObj
+   }
+}
+getData();
