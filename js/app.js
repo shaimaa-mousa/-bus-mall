@@ -14,6 +14,19 @@ let userAttemptsCounter = 0;
 let leftImgIndex;
 let centerImgIndex;
 let rightImgIndex;
+
+//array of names for the lable in the chart
+let namesArrayForChartLabel = [];
+
+//I'll make array of votes to put the votes inside the chart
+let votesArray = [];
+
+//I'll make array of shown to put the shown inside the chart
+let shownArray = [];
+
+//array to save a pic that are different'not repeted in two time' prevent users from seeing the same image in two subsequent iterations
+let blockShownPicInTwoSubsequentIterations=[];
+
 // let imgDivContainerIndex;
 //we will create the object to take a random number
 //we will make a constracter function
@@ -25,10 +38,13 @@ function BusMall(name, urlSourse) { //constractor function
     //each new bus mall will have attribute names voitwd
     this.votes = 0;
     //to know how many time it was shown
-    this.shown=0;
+    this.shown = 0;
     //we need to push every object we created
     //this refer to the object, refer to the new object that I'm created
     BusMall.allBusMal.push(this);
+
+    //to push the name to the array namesArrayForChartLabel (the name of the array namesArrayForChartLabel=[])
+    namesArrayForChartLabel.push(this.name);
 }
 
 // let allBusMal=[];
@@ -69,33 +85,25 @@ console.log(generateRandomIndex());
 //now make rendering function to three images
 //render mean that this function resbonsable for the rendering stuff(render mean shown on the page)
 function renderThreeImages() {
+    console.log('before',blockShownPicInTwoSubsequentIterations);
     leftImgIndex = generateRandomIndex();
     centerImgIndex = generateRandomIndex();
     rightImgIndex = generateRandomIndex();
     // imgDivContainerIndex = generateRandomIndex();
-    
-    //loops keep runing as long as a condition is true
-    // while (true) {
-    //     if (leftImgIndex===rightImgIndex || rightImgIndex===centerImgIndex) {
-    //         rightImgIndex=generateRandomIndex();
-    //     } else if(leftImgIndex===rightImgIndex || leftImgIndex===centerImgIndex){
-    //         leftImgIndex=generateRandomIndex();
-    //     } else if(centerImgIndex===leftImgIndex || centerImgIndex===rightImgIndex){
-    //         centerImgIndex=generateRandomIndex();
-    //     }
-    // }
-    // console.log(BusMall.allBusMal[leftImgIndex]); //why this console is unreachable
 
     //LEFT
-    while (leftImgIndex === rightImgIndex || leftImgIndex === centerImgIndex) {
+    while (leftImgIndex === rightImgIndex || leftImgIndex === centerImgIndex ||
+        blockShownPicInTwoSubsequentIterations.includes(leftImgIndex)) {
         leftImgIndex = generateRandomIndex();
     }
     //CENTER
-    while (centerImgIndex === leftImgIndex || centerImgIndex === rightImgIndex) {
+    while (centerImgIndex === leftImgIndex || centerImgIndex === rightImgIndex ||
+        blockShownPicInTwoSubsequentIterations.includes(centerImgIndex)) {
         centerImgIndex = generateRandomIndex();
     }
     //RIGHT
-    while (rightImgIndex === leftImgIndex || rightImgIndex === centerImgIndex) {
+    while (rightImgIndex === leftImgIndex || rightImgIndex === centerImgIndex ||
+        blockShownPicInTwoSubsequentIterations.includes(rightImgIndex)) {
         rightImgIndex = generateRandomIndex();
     }
     // console.log(BusMall.allBusMal[leftImgIndex]); //this same to BusMall.allBusMal[0]
@@ -104,6 +112,13 @@ function renderThreeImages() {
     //.urlSourse bring the extension of the image lik .jpg and so on
     // console.log(BusMall.allBusMal[rightImgIndex].urlSourse);
 
+    //to save a pic that are different'not repeted in two time' prevent users from seeing the same image in two subsequent iterations //you can make sure to replace values every time you run the function 
+    // blockShownPicInTwoSubsequentIterations[leftImgIndex,centerImgIndex,rightImgIndex];
+
+    blockShownPicInTwoSubsequentIterations=[];
+    console.log('after',blockShownPicInTwoSubsequentIterations);
+    blockShownPicInTwoSubsequentIterations.push(leftImgIndex,centerImgIndex,rightImgIndex);
+        
     leftImg.src = BusMall.allBusMal[leftImgIndex].urlSourse;
     //it should add the shown in the render function
     BusMall.allBusMal[leftImgIndex].shown++;
@@ -113,8 +128,8 @@ function renderThreeImages() {
     BusMall.allBusMal[centerImgIndex].shown++;
 
     rightImg.src = BusMall.allBusMal[rightImgIndex].urlSourse;
-        //it should add the shown in the render function
-        BusMall.allBusMal[rightImgIndex].shown++;
+    //it should add the shown in the render function
+    BusMall.allBusMal[rightImgIndex].shown++;
 
     // imgDiv.src = BusMall.allBusMal[imgDivIndex].urlSourse;
     console.log(leftImg.src);
@@ -156,7 +171,7 @@ function handelUserClick(event) {
             BusMall.allBusMal[centerImgIndex].votes++;
         } else if (event.target.id === 'rightImg') {
             BusMall.allBusMal[rightImgIndex].votes++;
-        } else{
+        } else {
             //to stop counting when the user click outside the image"when click on the div"
             userAttemptsCounter--;
         }
@@ -168,39 +183,48 @@ function handelUserClick(event) {
 
         //when we will vote something we will render again
         renderThreeImages();
-    } else{
+    } else {
         //to stop click after the number of maxAttempts (let maxAttempts=25;) //handel the clicking
         //render the list //<ul id="resultList"> 'this tag in html'
         // show the list
-        let list=document.getElementById('resultList');
+        let list = document.getElementById('resultList');
 
         //put the button inside the else, because we finish everything
-        let resultButton=document.getElementById('resultButton');
+        let resultButton = document.getElementById('resultButton');
         //add event listener to the button //showResult is function
         resultButton.addEventListener('click', showResult);
 
         // to shown the button "make it not hidden"
-        resultButton.hidden=false;
+        resultButton.hidden = false;
 
-        //create the showResult function
+        //making loop to push the votes and shown to the array
+        //I'll put the push of shown and votes in this function because if I push it inside "function BusMall" the first initial value it will be zero, we don't want that, we want after he finish votes and shown, e need to push to "votes array"
+        for (let i = 0; i < BusMall.allBusMal.length; i++) {
+            votesArray.push(BusMall.allBusMal[i].votes);
+            shownArray.push(BusMall.allBusMal[i].shown);
+
+        }
+        //afterfinish the votes and shown, show the chart
+        busMallChart();
+        //create the showResult function, this fun for shown the result
         function showResult() {
 
             let BusMallResult;
-        //create li using for loop
-        for (let i = 0; i < BusMall.allBusMal.length; i++) {
-            BusMallResult=document.createElement('li');
-            //append li to the list
-            list.appendChild(BusMallResult);
-            //give it a text content-> name[i]: name of each one , and votes[i] for each one
-            BusMallResult.textContent=`${BusMall.allBusMal[i].name}  
+            //create li using for loop
+            for (let i = 0; i < BusMall.allBusMal.length; i++) {
+                BusMallResult = document.createElement('li');
+                //append li to the list
+                list.appendChild(BusMallResult);
+                //give it a text content-> name[i]: name of each one , and votes[i] for each one
+                BusMallResult.textContent = `${BusMall.allBusMal[i].name}  
                                         with path  ${BusMall.allBusMal[i].urlSourse}  
                                         has  ${BusMall.allBusMal[i].votes} votes
                                         and was seen ${BusMall.allBusMal[i].shown} times`;
+            }
+            //now we need to make the click button stop after shown the result, to stop repeate the result
+            resultButton.removeEventListener('click', showResult);
         }
-        //now we need to make the click button stop after shown the result, to stop repeate the result
-        resultButton.removeEventListener('click',showResult);
-        }
-        
+
         //now we need to make the click stop after 25 votes'the user cann't click after 25 votes', removed event listener // and finaly remove the clicking
         // leftImg.removeEventListener('click', handelUserClick);
         // centerImg.removeEventListener('click', handelUserClick);
@@ -208,5 +232,44 @@ function handelUserClick(event) {
 
         imgDivContainer.removeEventListener('click', handelUserClick);
     }
+
+}
+
+// chart.js //bar chart
+
+function busMallChart() {
+    //first: get the chart element by id "the canvas tag" <canvas id="myChart"></canvas>
+    //getContext('2d') tell the canvas that we will draw 2 dimensional shapes'2 dimensional mean high and width'
+    let ctx = document.getElementById('myChart').getContext('2d');
+    //{}it's like a new object
+    let chart = new Chart(ctx, {
+        //type..specify what type is the chart
+        type: 'bar',
+        //data..specify what data I want to show, data is usually an object
+        data: {
+            labels: namesArrayForChartLabel,
+            datasets: [{
+                label: 'Bus Mall images information votes',
+                data: votesArray, //inside the data I'll put the values 'votes'
+                backgroundColor: [
+                    'rgb(46,139,87)',
+                ],
+                borderWidth: 1
+            },
+
+            {
+                label: 'Bus Mall images information shown',
+                data: shownArray, //inside the data I'll put the values 'shown'
+                backgroundColor: [
+                    'gold',
+                ],
+
+                borderWidth: 1
+            }
+
+            ]
+        },
+        options: {}
+    });
 
 }
